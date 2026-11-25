@@ -1,7 +1,6 @@
 
 import os
 import uuid
-from image_processing.background_removal import remove_background
 
 from flask import (
     Flask, render_template, request,
@@ -598,6 +597,10 @@ def download_result(filename, suffix, result):
 # BACKGROUND REMOVAL PAGE
 # --------------------------------------------------
 
+# --------------------------------------------------
+# BACKGROUND REMOVAL PAGE
+# --------------------------------------------------
+
 @app.route("/background-removal/<filename>", methods=["GET", "POST"])
 def background_removal_page(filename):
 
@@ -609,6 +612,8 @@ def background_removal_page(filename):
     if request.method == "POST":
 
         try:
+            from image_processing.background_removal import remove_background
+
             result = remove_background(
                 image_path,
                 app.config["RESULT_FOLDER"]
@@ -618,7 +623,7 @@ def background_removal_page(filename):
                 raise ValueError("Background removal failed.")
 
         except Exception:
-            error = "Background removal failed. Please try again."
+            error = "Background removal is currently unavailable on this deployment."
 
     return render_template(
         "background_removal.html",
@@ -626,6 +631,7 @@ def background_removal_page(filename):
         result=result,
         error=error
     )
+
 
 
 # --------------------------------------------------
