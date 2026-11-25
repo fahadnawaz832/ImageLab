@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Image Compression | Image Lab</title>
+
+    <link rel="icon" type="image/svg+xml"
+          href="{{ url_for('static', filename='images/imagelab-icon.svg') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* =====================================
+           IMAGELAB COMPRESSION - LIGHT THEME
+        ===================================== */
+
+        body,
+        .dashboard {
+            background: #f4f7fc !important;
+            color: #172033 !important;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid #e2e8f0 !important;
+            color: #172033 !important;
+        }
+
+        .sidebar .logo,
+        .sidebar .logo span {
+            color: #172033 !important;
+        }
+
+        .sidebar-label {
+            color: #94a3b8 !important;
+        }
+
+        .sidebar .nav-item {
+            color: #475569 !important;
+        }
+
+        .sidebar .nav-item:hover,
+        .sidebar .nav-item.active {
+            background: #eef2ff !important;
+            color: #4263eb !important;
+        }
+
+        .sidebar .nav-icon {
+            color: inherit !important;
+        }
+
+        .sidebar .sidebar-footer {
+            border-top: 1px solid #e2e8f0 !important;
+        }
+
+        .footer-brand strong {
+            color: #172033 !important;
+        }
+
+        .footer-brand span {
+            color: #94a3b8 !important;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            background: #f4f7fc !important;
+            color: #172033 !important;
+        }
+
+        .compression-page {
+            padding: 32px;
+            color: #172033 !important;
+        }
+
+        /* PAGE HEADER */
+        .compression-header {
+            margin-bottom: 30px;
+        }
+
+        .compression-header .eyebrow {
+            color: #4263eb !important;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .compression-header h1 {
+            color: #172033 !important;
+            -webkit-text-fill-color: #172033 !important;
+            font-size: 30px;
+            margin: 10px 0;
+        }
+
+        .compression-header p {
+            color: #64748b !important;
+            font-size: 14px;
+        }
+
+        /* COMPRESSION CARDS */
+        .compression-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.04) !important;
+            color: #172033 !important;
+        }
+
+        .compression-card h2 {
+            color: #172033 !important;
+            -webkit-text-fill-color: #172033 !important;
+            font-size: 19px;
+            margin: 0 0 8px;
+        }
+
+        .compression-card p {
+            color: #64748b !important;
+            font-size: 14px;
+        }
+
+        .compression-card label {
+            color: #334155 !important;
+        }
+
+        .quality-value {
+            color: #4263eb !important;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* QUALITY SLIDER */
+        .quality-slider {
+            width: 100%;
+            margin: 22px 0 10px;
+            accent-color: #4263eb;
+            cursor: pointer;
+        }
+
+        .quality-labels {
+            display: flex;
+            justify-content: space-between;
+            color: #64748b !important;
+            font-size: 12px;
+        }
+
+        /* FORMAT SELECT */
+        .compression-select {
+            width: 100%;
+            padding: 13px;
+            margin-top: 12px;
+            border: 1px solid #dbe3ef !important;
+            border-radius: 10px;
+            background: #ffffff !important;
+            color: #172033 !important;
+            outline: none;
+        }
+
+        .compression-select option {
+            background: #ffffff;
+            color: #172033;
+        }
+
+        .compression-select:focus {
+            border-color: #4263eb !important;
+        }
+
+        /* COMPRESS BUTTON */
+        .compression-button {
+            display: inline-block;
+            border: none;
+            background: #4263eb !important;
+            color: #ffffff !important;
+            padding: 13px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.25s;
+        }
+
+        .compression-button:hover {
+            background: #3451d1 !important;
+            transform: translateY(-2px);
+        }
+
+        /* RESULT STATISTICS */
+        .compression-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 22px;
+        }
+
+        .stat-box {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 20px;
+            border-radius: 13px;
+        }
+
+        .stat-box span {
+            display: block;
+            color: #64748b !important;
+            font-size: 12px;
+            margin-bottom: 9px;
+        }
+
+        .stat-box strong {
+            color: #172033 !important;
+            font-size: 21px;
+        }
+
+        /* DOWNLOAD BUTTON */
+        .download-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 13px 22px;
+            background: #16a36a !important;
+            color: #ffffff !important;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .download-button:hover {
+            background: #128456 !important;
+        }
+
+        /* BACK LINK */
+        .compression-back {
+            color: #4263eb !important;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .compression-back:hover {
+            color: #3451d1 !important;
+        }
+
+        @media (max-width: 700px) {
+            .compression-page {
+                padding: 18px;
+            }
+
+            .compression-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+
+        <a href="{{ url_for('home') }}" class="logo">
+            <img
+                src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                class="logo-icon"
+                alt="ImageLab">
+
+            <span>Image Lab</span>
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('home') }}" class="nav-item">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('image_analysis', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">▧</span>
+                <span>Image Analysis</span>
+            </a>
+
+            <a href="{{ url_for('histogram_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">▥</span>
+                <span>Histogram</span>
+            </a>
+
+            <a href="{{ url_for('filters_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">✦</span>
+                <span>Image Filters</span>
+            </a>
+
+            <a href="{{ url_for('enhancement_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">✧</span>
+                <span>Enhancement Studio</span>
+            </a>
+
+            <a href="{{ url_for('compression_page', filename=filename) }}"
+               class="nav-item active">
+                <span class="nav-icon">⇩</span>
+                <span>Image Compression</span>
+                <span class="nav-indicator"></span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-footer">
+
+                <img
+                    src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                    alt="ImageLab Logo"
+                    class="logo-icon">
+
+                <div class="footer-brand">
+                    <strong>Image Lab Studio</strong>
+                    <span>Version 1.0</span>
+                </div>
+
+            </div>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="compression-page">
+
+            <div class="compression-header">
+                <span class="eyebrow">IMAGE OPTIMIZATION</span>
+                <h1>Image Compression</h1>
+                <p>Reduce your image file size while maintaining visual quality.</p>
+            </div>
+
+            <div class="compression-card">
+
+                <h2>Compression Settings</h2>
+                <p>Choose your preferred image format and compression quality.</p>
+
+                <form method="POST"
+                      action="{{ url_for('compress_image', filename=filename) }}">
+
+                    <label for="quality">
+                        Compression Quality:
+                        <span class="quality-value" id="qualityValue">75%</span>
+                    </label>
+
+                    <input
+                        type="range"
+                        id="quality"
+                        name="quality"
+                        class="quality-slider"
+                        min="10"
+                        max="95"
+                        value="75"
+                        oninput="document.getElementById('qualityValue').textContent = this.value + '%'">
+
+                    <div class="quality-labels">
+                        <span>Smaller File</span>
+                        <span>Better Quality</span>
+                    </div>
+
+                    <br>
+
+                    <label for="format"><strong>Output Format</strong></label>
+
+                    <select name="format" id="format" class="compression-select">
+                        <option value="JPEG">JPEG</option>
+                        <option value="WEBP">WEBP</option>
+                    </select>
+
+                    <br><br>
+
+                    <button type="submit" class="compression-button">
+                        Compress Image
+                    </button>
+
+                </form>
+
+            </div>
+
+            {% if compressed %}
+
+            <div class="compression-card">
+
+                <h2>Compression Results</h2>
+                <p>Your image has been compressed successfully.</p>
+
+                <div class="compression-stats">
+
+                    <div class="stat-box">
+                        <span>Original Size</span>
+                        <strong>{{ original_size }}</strong>
+                    </div>
+
+                    <div class="stat-box">
+                        <span>Compressed Size</span>
+                        <strong>{{ compressed_size }}</strong>
+                    </div>
+
+                    <div class="stat-box">
+                        <span>Space Saved</span>
+                        <strong>{{ savings }}%</strong>
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('download_compressed', filename=filename, result=compressed) }}"
+                   class="download-button">
+                    Download Compressed Image
+                </a>
+
+            </div>
+
+            {% endif %}
+
+            <div style="margin-top:25px;">
+                <a href="{{ url_for('image_analysis', filename=filename) }}"
+                   class="compression-back">
+                    ← Back to Image Analysis
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

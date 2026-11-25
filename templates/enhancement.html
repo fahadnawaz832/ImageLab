@@ -1,0 +1,875 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Enhancement Studio | ImageLab</title>
+
+    <link rel="icon" type="image/svg+xml"
+          href="{{ url_for('static', filename='images/imagelab-icon.svg') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* ==============================
+           ENHANCEMENT PAGE
+        ============================== */
+
+        .enhancement-page {
+            padding: 28px;
+            color: #172033;
+        }
+
+        .enhancement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .enhancement-header h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #172033;
+            margin: 12px 0 8px;
+        }
+
+        .enhancement-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .studio-badge {
+            background: #eef2ff;
+            color: #4263eb;
+            border: 1px solid #dbe4ff;
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .enhancement-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(300px, .8fr);
+            gap: 22px;
+            align-items: start;
+        }
+
+        /* CARDS */
+
+        .studio-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 22px;
+            min-width: 0;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.045);
+        }
+
+        .studio-card h3 {
+            font-size: 17px;
+            font-weight: 750;
+            color: #172033;
+            margin-bottom: 8px;
+        }
+
+        .studio-subtitle {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* IMAGE PREVIEW */
+
+        .comparison-box {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            max-height: 540px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .comparison-box img {
+            max-width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .comparison-label {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            padding: 7px 12px;
+            border-radius: 8px;
+            background: #172033;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            z-index: 2;
+        }
+
+        .result-label {
+            left: auto;
+            right: 14px;
+            background: #4263eb;
+        }
+
+        .preview-placeholder {
+            color: #64748b;
+            text-align: center;
+            padding: 35px;
+        }
+
+        .preview-placeholder span {
+            display: block;
+            font-size: 42px;
+            margin-bottom: 12px;
+            color: #4263eb;
+        }
+
+        .preview-placeholder strong {
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .preview-placeholder p {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* CONTROLS */
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .control-heading label,
+        .control-group > label {
+            font-size: 13px;
+            font-weight: 650;
+            color: #334155;
+        }
+
+        .control-value {
+            color: #4263eb;
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .enhancement-control {
+            width: 100%;
+            accent-color: #4263eb;
+            cursor: pointer;
+        }
+
+        .control-range {
+            display: flex;
+            justify-content: space-between;
+            color: #94a3b8;
+            font-size: 11px;
+            margin-top: 7px;
+        }
+
+        /* INPUTS */
+
+        .studio-select,
+        .studio-input {
+            width: 100%;
+            padding: 12px;
+            background: #ffffff;
+            color: #172033;
+            border: 1px solid #dbe2ea;
+            border-radius: 10px;
+            outline: none;
+            margin-top: 10px;
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .studio-select:focus,
+        .studio-input:focus {
+            border-color: #4263eb;
+            box-shadow: 0 0 0 3px rgba(66, 99, 235, 0.10);
+        }
+
+        .studio-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .resize-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .resize-grid label {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* DIVIDER */
+
+        .studio-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 22px 0;
+        }
+
+        /* BUTTONS */
+
+        .studio-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .studio-button {
+            flex: 1;
+            min-width: 110px;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 15px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            transition: .25s;
+        }
+
+        .studio-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        .apply-button {
+            background: linear-gradient(135deg, #4263eb, #6384f5);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(66, 99, 235, 0.18);
+        }
+
+        .reset-button {
+            background: #eef2f7;
+            color: #334155;
+            border: 1px solid #dbe2ea;
+        }
+
+        /* DOWNLOAD */
+
+        .download-button {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            background: #059669;
+            color: #ffffff;
+            padding: 13px;
+            border-radius: 10px;
+            margin-top: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .download-button:hover {
+            background: #047857;
+        }
+
+        .result-notice {
+            margin-top: 18px;
+            padding: 13px;
+            border-radius: 10px;
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #047857;
+            font-size: 12px;
+        }
+
+        /* BACK LINK */
+
+        .back-link {
+            color: #4263eb;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .back-link:hover {
+            color: #2948c7;
+        }
+
+        /* SIDEBAR FOOTER */
+
+        .sidebar-bottom .sidebar-footer {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 12px !important;
+            padding: 15px 8px !important;
+        }
+
+        .sidebar-bottom .sidebar-footer img,
+        .sidebar .sidebar-footer img {
+            width: 40px !important;
+            height: 40px !important;
+            object-fit: contain !important;
+            flex-shrink: 0 !important;
+        }
+
+        .footer-brand {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 4px !important;
+        }
+
+        .footer-brand strong {
+            font-size: 13px !important;
+            color: #172033 !important;
+        }
+
+        .footer-brand span {
+            font-size: 11px !important;
+            color: #8491a5 !important;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 1050px) {
+            .enhancement-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 600px) {
+            .enhancement-page {
+                padding: 16px;
+            }
+
+            .enhancement-header h1 {
+                font-size: 23px;
+            }
+
+            .studio-card {
+                padding: 16px;
+            }
+
+            .comparison-box {
+                min-height: 220px;
+            }
+
+            .studio-badge {
+                font-size: 10px;
+            }
+        }
+        /* WHITE TEXT FIX */
+
+.sidebar .logo,
+.sidebar .logo > span,
+.sidebar .logo-dot,
+.enhancement-header h1,
+.sidebar-bottom .footer-brand strong {
+    color: #ffffff !important;
+}
+        /* ENHANCEMENT SIDEBAR - WHITE THEME */
+
+.sidebar {
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+}
+
+/* LOGO TEXT */
+.sidebar .logo,
+.sidebar .logo > span {
+    color: #172033 !important;
+}
+
+/* WORKSPACE LABEL */
+.sidebar .sidebar-label {
+    color: #64748b !important;
+}
+
+/* NAVIGATION TEXT */
+.sidebar .nav-link {
+    color: #334155 !important;
+    background: transparent !important;
+}
+
+/* NAVIGATION ICONS */
+.sidebar .nav-link > span {
+    color: #64748b !important;
+}
+
+/* HOVER */
+.sidebar .nav-link:hover {
+    background: #f1f5f9 !important;
+    color: #172033 !important;
+}
+
+/* ACTIVE LINK */
+.sidebar .nav-link.active {
+    background: #4263eb !important;
+    color: #ffffff !important;
+}
+
+.sidebar .nav-link.active > span {
+    color: #ffffff !important;
+}
+
+/* SIDEBAR FOOTER */
+.sidebar .sidebar-footer {
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+/* FOOTER TEXT */
+.sidebar .footer-brand strong {
+    color: #172033 !important;
+}
+
+.sidebar .footer-brand span {
+    color: #64748b !important;
+}
+
+/* LEGACY FOOTER TEXT */
+.sidebar .sidebar-footer > strong {
+    color: #172033 !important;
+}
+
+.sidebar .sidebar-footer > span {
+    color: #64748b !important;
+}
+
+/* STATUS TEXT */
+.sidebar .sidebar-status {
+    color: #64748b !important;
+}
+    </style>
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <a href="{{ url_for('home') }}" class="logo">
+            <img
+                src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                class="logo-icon"
+                alt="ImageLab">
+
+            <span>Image Lab</span>
+        </a>
+
+        <div class="sidebar-section">
+
+            <span class="sidebar-label">WORKSPACE</span>
+
+            <nav class="sidebar-nav">
+
+                <a href="{{ url_for('home') }}" class="nav-link">
+                    <span>⌂</span> Dashboard
+                </a>
+
+                <a href="{{ url_for('image_analysis', filename=filename) }}"
+                   class="nav-link">
+                    <span>▦</span> Image Analysis
+                </a>
+
+                <a href="{{ url_for('histogram_page', filename=filename) }}"
+                   class="nav-link">
+                    <span>▥</span> Histogram
+                </a>
+
+                <a href="{{ url_for('filters_page', filename=filename) }}"
+                   class="nav-link">
+                    <span>◈</span> Image Filters
+                </a>
+
+                <a href="{{ url_for('enhancement_page', filename=filename) }}"
+                   class="nav-link active">
+                    <span>✧</span> Enhancement Studio
+                </a>
+
+            </nav>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-footer">
+
+                <img
+                    src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                    alt="ImageLab Logo"
+                    class="logo-icon">
+
+                <div class="footer-brand">
+                    <strong>Image Lab Studio</strong>
+                    <span>Version 1.0</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <div class="enhancement-page">
+
+            <div class="enhancement-header">
+
+                <div>
+
+                    <a href="{{ url_for('image_analysis', filename=filename) }}"
+                       class="back-link">
+                        ← Back to Analysis
+                    </a>
+
+                    <h1>Enhancement Studio</h1>
+
+                    <p>Adjust, transform and improve your images.</p>
+
+                </div>
+
+                <div class="studio-badge">
+                    ✦ ADVANCED IMAGE EDITOR
+                </div>
+
+            </div>
+
+
+            <div class="enhancement-layout">
+
+
+                <!-- IMAGE PREVIEW -->
+                <section class="studio-card">
+
+                    <h3>Image Preview</h3>
+
+                    <p class="studio-subtitle">
+                        Compare your original and processed image.
+                    </p>
+
+                    <div class="comparison-box">
+
+                        <span class="comparison-label">ORIGINAL</span>
+
+                        <img
+                            src="{{ url_for('static', filename='uploads/' + filename) }}"
+                            alt="Original Image"
+                            id="originalPreview">
+
+                    </div>
+
+
+                    {% if result %}
+
+                    <div class="studio-divider"></div>
+
+                    <h3>Enhanced Result</h3>
+
+                    <p class="studio-subtitle">
+                        Your processed image is ready.
+                    </p>
+
+                    <div class="comparison-box">
+
+                        <span class="comparison-label result-label">
+                            ENHANCED
+                        </span>
+
+                        <img
+                            src="{{ url_for('static', filename='results/' + result) }}"
+                            alt="Enhanced Image"
+                            id="enhancedPreview">
+
+                    </div>
+
+
+                    <a
+                        class="download-button"
+                        href="{{ download_url }}">
+
+                        ↓ Download Enhanced Image
+
+                    </a>
+
+
+                    <div class="result-notice">
+                        ✓ Image enhancement completed successfully.
+                    </div>
+
+                    {% else %}
+
+                    <div class="studio-divider"></div>
+
+                    <div class="preview-placeholder">
+
+                        <span>✧</span>
+
+                        <strong>Your enhanced image will appear here.</strong>
+
+                        <p>
+                            Adjust the settings and click Apply Enhancement.
+                        </p>
+
+                    </div>
+
+                    {% endif %}
+
+                </section>
+
+
+                <!-- ADJUSTMENT CONTROLS -->
+                <section class="studio-card">
+
+                    <h3>Adjustment Controls</h3>
+
+                    <p class="studio-subtitle">
+                        Customize your image using the controls below.
+                    </p>
+
+                    <form
+                        action="{{ url_for('enhance_image_route', filename=filename) }}"
+                        method="POST">
+
+
+                        <!-- BRIGHTNESS -->
+                        <div class="control-group">
+
+                            <div class="control-heading">
+
+                                <label for="brightness">
+                                    ☀ Brightness
+                                </label>
+
+                                <span class="control-value"
+                                      id="brightnessValue">
+                                    0
+                                </span>
+
+                            </div>
+
+                            <input
+                                type="range"
+                                class="enhancement-control"
+                                id="brightness"
+                                name="brightness"
+                                min="-100"
+                                max="100"
+                                value="0"
+                                oninput="updateValue('brightness')">
+
+                            <div class="control-range">
+                                <span>-100</span>
+                                <span>0</span>
+                                <span>+100</span>
+                            </div>
+
+                        </div>
+
+
+                        <!-- CONTRAST -->
+                        <div class="control-group">
+
+                            <div class="control-heading">
+
+                                <label for="contrast">
+                                    ◐ Contrast
+                                </label>
+
+                                <span class="control-value"
+                                      id="contrastValue">
+                                    1.0
+                                </span>
+
+                            </div>
+
+                            <input
+                                type="range"
+                                class="enhancement-control"
+                                id="contrast"
+                                name="contrast"
+                                min="0.1"
+                                max="3"
+                                step="0.1"
+                                value="1"
+                                oninput="updateValue('contrast')">
+
+                            <div class="control-range">
+                                <span>Low</span>
+                                <span>Normal</span>
+                                <span>High</span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="studio-divider"></div>
+
+
+                        <!-- ROTATION -->
+                        <div class="control-group">
+
+                            <label for="rotation">
+                                ↻ Image Rotation
+                            </label>
+
+                            <select
+                                class="studio-select"
+                                id="rotation"
+                                name="rotation">
+
+                                <option value="0">No Rotation</option>
+                                <option value="90">90° Clockwise</option>
+                                <option value="180">180°</option>
+                                <option value="270">270° Clockwise</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- RESIZE -->
+                        <div class="control-group">
+
+                            <label>▣ Resize Image</label>
+
+                            <p class="studio-subtitle">
+                                Leave both fields empty to keep original dimensions.
+                            </p>
+
+                            <div class="resize-grid">
+
+                                <div>
+
+                                    <label for="width">Width (px)</label>
+
+                                    <input
+                                        type="number"
+                                        class="studio-input"
+                                        id="width"
+                                        name="width"
+                                        min="1"
+                                        max="5000"
+                                        placeholder="e.g. 1200">
+
+                                </div>
+
+                                <div>
+
+                                    <label for="height">Height (px)</label>
+
+                                    <input
+                                        type="number"
+                                        class="studio-input"
+                                        id="height"
+                                        name="height"
+                                        min="1"
+                                        max="5000"
+                                        placeholder="e.g. 800">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="studio-divider"></div>
+
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="studio-actions">
+
+                            <button
+                                type="submit"
+                                class="studio-button apply-button">
+
+                                ✧ Apply Enhancement
+
+                            </button>
+
+                            <button
+                                type="reset"
+                                class="studio-button reset-button"
+                                onclick="setTimeout(resetValues, 0)">
+
+                                ↺ Reset
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+<script>
+
+    function updateValue(control) {
+
+        const input = document.getElementById(control);
+
+        const output = document.getElementById(
+            control + "Value"
+        );
+
+        output.textContent = input.value;
+
+    }
+
+
+    function resetValues() {
+
+        document.getElementById(
+            "brightnessValue"
+        ).textContent = "0";
+
+        document.getElementById(
+            "contrastValue"
+        ).textContent = "1.0";
+
+    }
+
+</script>
+
+</body>
+</html>

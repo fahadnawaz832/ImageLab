@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Image Analysis | ImageLab</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="{{ url_for('static', filename='js/analysis.js') }}"
+            defer></script>
+
+<style>
+/* =====================================
+   IMAGELAB ANALYSIS - LIGHT THEME
+   Only colors and text styling
+===================================== */
+
+body {
+    background: #f4f7fc !important;
+    color: #172033 !important;
+}
+
+.analysis-page {
+    background: #f4f7fc !important;
+    color: #172033 !important;
+}
+
+.analysis-header {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+}
+
+.brand h2 {
+    color: #172033 !important;
+}
+
+.brand span {
+    color: #64748b !important;
+}
+
+.analysis-heading h1 {
+    color: #172033 !important;
+}
+
+.analysis-heading p {
+    color: #64748b !important;
+}
+
+.section-title h2 {
+    color: #172033 !important;
+}
+
+.section-title p {
+    color: #64748b !important;
+}
+
+.section-label {
+    color: #4263eb !important;
+}
+
+/* Information Cards */
+.info-card,
+.array-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04) !important;
+}
+
+.info-card span,
+.array-card span {
+    color: #64748b !important;
+}
+
+.info-card h3,
+.array-card h3 {
+    color: #172033 !important;
+}
+
+.info-card h3 small {
+    color: #64748b !important;
+}
+
+/* Pixel Inspector */
+.pixel-image-container,
+.pixel-info {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04) !important;
+}
+
+.pixel-info-heading {
+    color: #172033 !important;
+}
+
+.pixel-value {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+.pixel-value span {
+    color: #64748b !important;
+}
+
+.pixel-value strong {
+    color: #172033 !important;
+}
+
+.pixel-note {
+    color: #64748b !important;
+}
+
+/* Back Button */
+.secondary-button {
+    color: #334155 !important;
+}
+
+/* Keep primary buttons blue */
+.primary-button {
+    color: #ffffff !important;
+}
+
+/* Keep borders subtle */
+.analysis-section {
+    color: #172033 !important;
+}
+    /* Make these section headings white */
+.section-title h2 {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="analysis-page">
+
+    <header class="analysis-header">
+
+        <a href="/" class="brand">
+            <img
+    src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+    class="brand-icon"
+    alt="ImageLab">
+            <div>
+                <h2>Image Lab</h2>
+                <span>PROCESSING STUDIO</span>
+            </div>
+        </a>
+
+        <a href="/" class="secondary-button">← Back to Dashboard</a>
+
+    </header>
+
+
+    <main class="analysis-main">
+
+        <div class="analysis-heading">
+            <div class="section-label">IMAGE INTELLIGENCE</div>
+            <h1>Image Analysis</h1>
+            <p>Explore image properties, dimensions and pixel information.</p>
+        </div>
+<!-- IMAGE PROCESSING NAVIGATION -->
+<div class="analysis-actions">
+
+    <a href="{{ url_for('histogram_page', filename=filename) }}"
+       class="primary-button">
+        View Histogram →
+    </a>
+
+    <a href="{{ url_for('filters_page', filename=filename) }}"
+       class="primary-button">
+        Image Filters →
+    </a>
+
+    <a href="{{ url_for('enhancement_page', filename=filename) }}"
+       class="primary-button">
+        Enhancement Studio →
+    </a>
+
+    <a href="{{ url_for('compression_page', filename=filename) }}"
+       class="primary-button">
+        Image Compression →
+    </a>
+
+<a href="{{ url_for('background_removal_page', filename=filename) }}"
+   class="primary-button">
+    Background Removal →
+</a>
+
+</div>
+        <!-- IMAGE INFORMATION -->
+
+        <section class="analysis-section">
+
+            <div class="section-title">
+                <div>
+                    <div class="section-label">IMAGE PROPERTIES</div>
+                    <h2>Technical Information</h2>
+                    <p>Automatically extracted image metadata.</p>
+                </div>
+            </div>
+
+
+            <div class="info-grid">
+
+                <div class="info-card">
+                    <span>IMAGE WIDTH</span>
+                    <h3>{{ analysis.width }} <small>px</small></h3>
+                </div>
+
+                <div class="info-card">
+                    <span>IMAGE HEIGHT</span>
+                    <h3>{{ analysis.height }} <small>px</small></h3>
+                </div>
+
+                <div class="info-card">
+                    <span>TOTAL PIXELS</span>
+                    <h3>{{ analysis.total_pixels }}</h3>
+                </div>
+
+                <div class="info-card">
+                    <span>FILE SIZE</span>
+                    <h3>{{ analysis.file_size }}</h3>
+                </div>
+
+                <div class="info-card">
+                    <span>IMAGE FORMAT</span>
+                    <h3>{{ analysis.format }}</h3>
+                </div>
+
+                <div class="info-card">
+                    <span>IMAGE TYPE</span>
+                    <h3>{{ analysis.image_type }}</h3>
+                </div>
+
+                <div class="info-card">
+                    <span>COLOR CHANNELS</span>
+                    <h3>{{ analysis.channels }}</h3>
+                </div>
+
+                <div class="info-card">
+                    <span>COLOR MODE</span>
+                    <h3>{{ analysis.color_mode }}</h3>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PIXEL INSPECTOR -->
+
+        <section class="analysis-section">
+
+            <div class="section-title">
+                <div>
+                    <div class="section-label">PIXEL LEVEL ANALYSIS</div>
+                    <h2>Interactive Pixel Inspector</h2>
+                    <p>Move your mouse over the image to inspect individual pixels.</p>
+                </div>
+            </div>
+
+
+            <div class="pixel-layout">
+
+                <div class="pixel-image-container">
+
+                    <img id="sourceImage"
+                         src="{{ url_for('static',
+                              filename='uploads/' + filename) }}"
+                         alt="Uploaded Image"
+                         hidden>
+
+                    <canvas id="pixelCanvas"></canvas>
+
+                </div>
+
+
+                <div class="pixel-info">
+
+                    <div class="pixel-info-heading">
+                        <span class="section-label">LIVE PIXEL DATA</span>
+                        <div class="live-dot"></div>
+                    </div>
+
+                    <div class="color-preview" id="colorPreview"></div>
+
+                    <div class="pixel-value">
+                        <span>COORDINATE X</span>
+                        <strong id="pixelX">--</strong>
+                    </div>
+
+                    <div class="pixel-value">
+                        <span>COORDINATE Y</span>
+                        <strong id="pixelY">--</strong>
+                    </div>
+
+                    <div class="pixel-value">
+                        <span>RED (R)</span>
+                        <strong id="redValue">--</strong>
+                    </div>
+
+                    <div class="pixel-value">
+                        <span>GREEN (G)</span>
+                        <strong id="greenValue">--</strong>
+                    </div>
+
+                    <div class="pixel-value">
+                        <span>BLUE (B)</span>
+                        <strong id="blueValue">--</strong>
+                    </div>
+
+                    <div class="pixel-value">
+                        <span>HEX COLOR</span>
+                        <strong id="hexValue">--</strong>
+                    </div>
+
+                    <div class="pixel-note">
+                        Hover over any pixel to view its exact RGB values.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ARRAY INFORMATION -->
+
+        <section class="analysis-section">
+
+            <div class="section-title">
+                <div>
+                    <div class="section-label">NUMERICAL REPRESENTATION</div>
+                    <h2>Image Array Information</h2>
+                </div>
+            </div>
+
+            <div class="array-grid">
+
+                <div class="array-card">
+                    <span>NUMPY ARRAY SHAPE</span>
+                    <h3>{{ analysis.array_shape }}</h3>
+                </div>
+
+                <div class="array-card">
+                    <span>PIXEL DATA TYPE</span>
+                    <h3>{{ analysis.dtype }}</h3>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

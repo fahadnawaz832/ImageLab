@@ -1,0 +1,762 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Image Filters | Image Lab</title>
+
+    <link rel="icon" type="image/svg+xml"
+          href="{{ url_for('static', filename='images/imagelab-icon.svg') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* FILTER PAGE LIGHT THEME */
+
+        body {
+            background: #f4f7fc;
+            color: #172033;
+        }
+
+        .dashboard {
+            background: #f4f7fc;
+        }
+
+        .sidebar {
+            background: #ffffff;
+            border-right: 1px solid #e7edf5;
+        }
+
+        .main-content {
+            background: #f4f7fc;
+            color: #172033;
+        }
+
+        .topbar {
+            border-bottom: 1px solid #e5eaf2;
+        }
+
+        .breadcrumb {
+            color: #8491a5;
+        }
+
+        .topbar h2 {
+            color: #172033;
+        }
+
+        .back-button {
+            background: #ffffff;
+            color: #334155;
+            border: 1px solid #e1e7f0;
+            border-radius: 9px;
+        }
+
+        .back-button:hover {
+            background: #eef3ff;
+            color: #4263eb;
+            border-color: #cbd7ff;
+        }
+
+        /* PAGE HEADING */
+
+        .filters-heading {
+            background: #ffffff;
+            border: 1px solid #e7edf5;
+            border-radius: 15px;
+            padding: 27px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 18px rgba(30, 50, 90, 0.035);
+        }
+
+        .section-tag {
+            color: #4263eb;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            font-size: 11px;
+        }
+
+        .filters-heading h1 {
+            color: #172033;
+            margin-top: 10px;
+        }
+
+        .filters-heading p {
+            color: #64748b;
+        }
+
+        /* WORKSPACE */
+
+        .filter-workspace {
+            gap: 22px;
+        }
+
+        .filter-preview-card,
+        .filter-controls-card,
+        .filter-result-card {
+            background: #ffffff;
+            border: 1px solid #e5eaf2;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(30, 50, 90, 0.045);
+            color: #172033;
+        }
+
+        .filter-preview-card,
+        .filter-controls-card {
+            padding: 23px;
+        }
+
+        .card-heading {
+            border-bottom: 1px solid #edf0f5;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-heading h3 {
+            color: #172033;
+            font-size: 17px;
+        }
+
+        .live-tag {
+            background: #edf3ff;
+            color: #4263eb;
+            border: 1px solid #dce6ff;
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* IMAGE PREVIEW */
+
+        .filter-image {
+            width: 100%;
+            max-height: 370px;
+            object-fit: contain;
+            background: #f7f9fc;
+            border: 1px solid #e9edf4;
+            border-radius: 11px;
+            padding: 8px;
+        }
+
+        .image-filename {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        /* FILTER OPTIONS */
+
+        .filter-label {
+            display: block;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 13px;
+        }
+
+        .filter-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .filter-option {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 15px;
+            min-height: 112px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-option:hover {
+            border-color: #9bb2ff;
+            background: #f8faff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 14px rgba(66, 99, 235, 0.07);
+        }
+
+        .filter-option:has(input:checked) {
+            background: #f0f4ff;
+            border: 1px solid #4263eb;
+            box-shadow: 0 0 0 2px rgba(66, 99, 235, 0.08);
+        }
+
+        .filter-option input {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            accent-color: #4263eb;
+        }
+
+        .filter-option > span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 31px;
+            height: 31px;
+            border-radius: 8px;
+            background: #edf3ff;
+            color: #4263eb;
+            font-size: 18px;
+        }
+
+        .filter-option strong {
+            color: #263449;
+            font-size: 13px;
+        }
+
+        .filter-option small {
+            color: #8491a5;
+            font-size: 11px;
+        }
+
+        /* INTENSITY */
+
+        .intensity-control {
+            margin-top: 23px;
+            padding: 16px;
+            background: #f7f9fc;
+            border: 1px solid #e8edf4;
+            border-radius: 11px;
+        }
+
+        .intensity-control label {
+            display: block;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .intensity-control input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            background: #ffffff;
+            border: 1px solid #dce3ed;
+            border-radius: 8px;
+            color: #172033;
+            outline: none;
+        }
+
+        .intensity-control input:focus {
+            border-color: #4263eb;
+            box-shadow: 0 0 0 3px rgba(66, 99, 235, 0.10);
+        }
+
+        .intensity-control small {
+            display: block;
+            color: #8491a5;
+            margin-top: 9px;
+            font-size: 11px;
+        }
+
+        /* APPLY BUTTON */
+
+        .apply-filter-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 20px;
+            padding: 13px 18px;
+            background: #4263eb;
+            color: #ffffff !important;
+            border: none;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .apply-filter-button:hover {
+            background: #3451d1;
+            box-shadow: 0 5px 15px rgba(66, 99, 235, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* RESULT */
+
+        .filter-result-card {
+            padding: 23px;
+            margin-top: 24px;
+        }
+
+        .filter-result-image {
+            display: block;
+            width: 100%;
+            max-height: 450px;
+            object-fit: contain;
+            background: #f7f9fc;
+            border: 1px solid #e9edf4;
+            border-radius: 11px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .result-actions {
+            margin-top: 15px;
+            max-width: 260px;
+        }
+
+        .result-actions .apply-filter-button {
+            margin-top: 0;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+            .filter-workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .filters-heading {
+                padding: 20px;
+            }
+
+            .filter-preview-card,
+            .filter-controls-card,
+            .filter-result-card {
+                padding: 16px;
+            }
+
+            .filter-options {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+        }
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-footer .logo-icon {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.footer-brand strong {
+    color: #172033;
+    font-size: 13px;
+}
+
+.footer-brand span {
+    color: #8491a5;
+    font-size: 11px;
+}
+
+/* DARK SIDEBAR LOGO TEXT */
+
+.sidebar .logo span {
+    color: #172033 !important;
+    font-weight: 700;
+}
+
+.sidebar .logo .logo-dot {
+    color: #4263eb !important;
+}
+       /* =========================================
+   FILTER SIDEBAR - MATCH HISTOGRAM PAGE
+========================================= */
+
+/* SIDEBAR */
+.dashboard .sidebar {
+    background: #ffffff !important;
+    border-right: 1px solid #e2e8f0 !important;
+}
+
+/* LOGO */
+.dashboard .sidebar .logo {
+    color: #172033 !important;
+    text-decoration: none !important;
+}
+
+.dashboard .sidebar .logo > span {
+    color: #172033 !important;
+    font-weight: 700 !important;
+}
+
+.dashboard .sidebar .logo .logo-dot {
+    color: #4263eb !important;
+}
+
+/* WORKSPACE LABEL */
+.dashboard .sidebar .sidebar-label {
+    color: #94a3b8 !important;
+}
+
+/* ALL NAV ITEMS */
+.dashboard .sidebar .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    color: #475569 !important;
+    background: transparent !important;
+    border-radius: 10px !important;
+    transition: all .25s ease !important;
+    text-decoration: none !important;
+}
+
+/* NAV ICON */
+.dashboard .sidebar .nav-item .nav-icon {
+    color: #64748b !important;
+    transition: all .25s ease !important;
+}
+
+/* HOVER */
+.dashboard .sidebar .nav-item:hover {
+    background: #eef2ff !important;
+    color: #4263eb !important;
+    transform: translateX(3px) !important;
+}
+
+/* HOVER ICON */
+.dashboard .sidebar .nav-item:hover .nav-icon {
+    color: #4263eb !important;
+}
+
+/* ACTIVE ITEM */
+.dashboard .sidebar .nav-item.active {
+    background: #eef2ff !important;
+    color: #4263eb !important;
+}
+
+/* ACTIVE ICON */
+.dashboard .sidebar .nav-item.active .nav-icon {
+    color: #4263eb !important;
+}
+
+/* ACTIVE INDICATOR */
+.dashboard .sidebar .nav-item.active .nav-indicator {
+    background: #4263eb !important;
+}
+
+/* SIDEBAR FOOTER BORDER */
+.dashboard .sidebar .sidebar-bottom {
+    border-top: 1px solid #e2e8f0 !important;
+}
+
+/* FOOTER LOGO */
+.dashboard .sidebar .sidebar-footer .logo-icon {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: contain !important;
+    flex-shrink: 0 !important;
+}
+
+/* FOOTER TEXT */
+.dashboard .sidebar .footer-brand {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+}
+
+.dashboard .sidebar .footer-brand strong {
+    color: #172033 !important;
+}
+
+.dashboard .sidebar .footer-brand span {
+    color: #64748b !important;
+}
+
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <a href="{{ url_for('home') }}" class="logo">
+            <img
+                src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                class="logo-icon"
+                alt="ImageLab">
+
+            <span>Image Lab</span>
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('home') }}" class="nav-item">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('image_analysis', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">▧</span>
+                <span>Image Analysis</span>
+            </a>
+
+            <a href="{{ url_for('histogram_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">▥</span>
+                <span>Histogram</span>
+            </a>
+
+            <a href="{{ url_for('filters_page', filename=filename) }}"
+               class="nav-item active">
+                <span class="nav-icon">✦</span>
+                <span>Image Filters</span>
+                <span class="nav-indicator"></span>
+            </a>
+
+            <a href="{{ url_for('enhancement_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">✧</span>
+                <span>Enhancement Studio</span>
+            </a>
+
+        </nav>
+
+
+<div class="sidebar-bottom">
+
+    <div class="sidebar-footer">
+
+        <img
+            src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+            alt="ImageLab Logo"
+            class="logo-icon">
+
+        <div class="footer-brand">
+            <strong>Image Processing</strong>
+            <span>Version 1.0</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <p class="breadcrumb">WORKSPACE / PROCESSING</p>
+                <h2>Image Filters</h2>
+            </div>
+
+            <a href="{{ url_for('image_analysis', filename=filename) }}"
+               class="back-button">
+                ← Back to Analysis
+            </a>
+
+        </header>
+
+
+        <!-- PAGE HEADING -->
+        <section class="filters-heading">
+
+            <div>
+                <span class="section-tag">IMAGE ENHANCEMENT ENGINE</span>
+
+                <h1>Transform Your Image</h1>
+
+                <p>
+                    Apply professional image processing techniques with one click.
+                </p>
+            </div>
+
+        </section>
+
+
+        <!-- FILTER WORKSPACE -->
+        <section class="filter-workspace">
+
+
+            <!-- ORIGINAL IMAGE -->
+            <div class="filter-preview-card">
+
+                <div class="card-heading">
+                    <h3>Original Image</h3>
+                    <span class="live-tag">SOURCE</span>
+                </div>
+
+                <img
+                    src="{{ url_for('static', filename='uploads/' + filename) }}"
+                    class="filter-image"
+                    alt="Original uploaded image">
+
+                <p class="image-filename">{{ filename }}</p>
+
+            </div>
+
+
+            <!-- FILTER CONTROLS -->
+            <div class="filter-controls-card">
+
+                <div class="card-heading">
+                    <h3>Processing Tools</h3>
+                    <span class="live-tag">7 FILTERS</span>
+                </div>
+
+                <form
+                    action="{{ url_for('apply_image_filter', filename=filename) }}"
+                    method="POST">
+
+                    <label class="filter-label">Select Filter</label>
+
+                    <div class="filter-options">
+
+                        <label class="filter-option">
+                            <input type="radio" name="filter_type" value="grayscale" required>
+                            <span>◐</span>
+                            <strong>Grayscale</strong>
+                            <small>Black & white</small>
+                        </label>
+
+                        <label class="filter-option">
+                            <input type="radio" name="filter_type" value="gaussian">
+                            <span>◉</span>
+                            <strong>Gaussian Blur</strong>
+                            <small>Smooth image</small>
+                        </label>
+
+                        <label class="filter-option">
+                            <input type="radio" name="filter_type" value="median">
+                            <span>✧</span>
+                            <strong>Median Filter</strong>
+                            <small>Noise reduction</small>
+                        </label>
+
+                        <label class="filter-option">
+                            <input type="radio" name="filter_type" value="edge">
+                            <span>⌁</span>
+                            <strong>Edge Detection</strong>
+                            <small>Find boundaries</small>
+                        </label>
+
+                        <label class="filter-option">
+                            <input type="radio" name="filter_type" value="sharpen">
+                            <span>✦</span>
+                            <strong>Sharpen</strong>
+                            <small>Enhance details</small>
+                        </label>
+
+                        <label class="filter-option">
+                            <input type="radio" name="filter_type" value="brightness">
+                            <span>☼</span>
+                            <strong>Brightness</strong>
+                            <small>Adjust lighting</small>
+                        </label>
+
+                        <label class="filter-option">
+                            <input type="radio" name="filter_type" value="contrast">
+                            <span>◒</span>
+                            <strong>Contrast</strong>
+                            <small>Adjust intensity</small>
+                        </label>
+
+                    </div>
+
+
+                    <!-- INTENSITY -->
+                    <div class="intensity-control">
+
+                        <label for="intensity">Intensity</label>
+
+                        <input
+                            type="number"
+                            id="intensity"
+                            name="intensity"
+                            value="30"
+                            min="-100"
+                            max="100"
+                            step="1">
+
+                        <small>
+                            Used for brightness and contrast adjustments.
+                        </small>
+
+                    </div>
+
+
+                    <button type="submit" class="apply-filter-button">
+                        Apply Selected Filter →
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROCESSED RESULT -->
+        {% if result %}
+
+        <section class="filter-result-card">
+
+            <div class="card-heading">
+                <h3>Processed Result</h3>
+                <span class="live-tag">COMPLETED</span>
+            </div>
+
+            <img
+                src="{{ url_for('static', filename='results/' + result) }}"
+                class="filter-result-image"
+                alt="Processed image">
+
+            <div class="result-actions">
+
+                <a
+                    href="{{ download_url }}"
+                    class="apply-filter-button">
+
+                    Download Filtered Image ↓
+
+                </a>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Background Removal | Image Lab</title>
+
+    <link rel="icon" type="image/svg+xml"
+          href="{{ url_for('static', filename='images/imagelab-icon.svg') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body,
+        .dashboard {
+            background: #f4f7fc !important;
+            color: #172033 !important;
+        }
+
+        .sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid #e2e8f0 !important;
+        }
+
+        .sidebar .logo,
+        .sidebar .logo span {
+            color: #172033 !important;
+        }
+
+        .sidebar-label {
+            color: #94a3b8 !important;
+        }
+
+        .sidebar .nav-item {
+            color: #475569 !important;
+        }
+
+        .sidebar .nav-item:hover,
+        .sidebar .nav-item.active {
+            background: #eef2ff !important;
+            color: #4263eb !important;
+        }
+
+        .sidebar .sidebar-footer {
+            border-top: 1px solid #e2e8f0 !important;
+        }
+
+        .footer-brand strong {
+            color: #172033 !important;
+        }
+
+        .footer-brand span {
+            color: #94a3b8 !important;
+        }
+
+        .main-content {
+            background: #f4f7fc !important;
+        }
+
+        .background-page {
+            padding: 32px;
+            color: #172033;
+        }
+
+        .background-header {
+            margin-bottom: 30px;
+        }
+
+        .eyebrow {
+            color: #4263eb;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .background-header h1 {
+            color: #172033 !important;
+            font-size: 30px;
+            margin: 10px 0;
+        }
+
+        .background-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .background-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.04);
+        }
+
+        .background-card h2 {
+            color: #172033 !important;
+            font-size: 19px;
+            margin: 0 0 8px;
+        }
+
+        .background-card p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .image-preview {
+            margin-top: 22px;
+            padding: 20px;
+            text-align: center;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+        }
+
+        .image-preview h3 {
+            color: #172033;
+            margin-bottom: 15px;
+        }
+
+        .preview-image {
+            display: block;
+            max-width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            margin: 0 auto;
+            border-radius: 10px;
+        }
+
+        .result-image {
+            background-color: #ffffff;
+            background-image:
+                linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+                linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+            background-size: 20px 20px;
+            background-position:
+                0 0, 0 10px, 10px -10px, -10px 0;
+        }
+
+        .background-button {
+            display: inline-block;
+            border: none;
+            background: #4263eb;
+            color: #ffffff !important;
+            padding: 13px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.25s;
+            margin-top: 20px;
+        }
+
+        .background-button:hover {
+            background: #3451d1;
+            transform: translateY(-2px);
+        }
+
+        .download-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 13px 22px;
+            background: #16a36a;
+            color: #ffffff !important;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .download-button:hover {
+            background: #128456;
+            transform: translateY(-2px);
+        }
+
+        .background-result {
+            margin-top: 25px;
+            padding: 25px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .background-result h3 {
+            color: #172033;
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            margin-top: 20px;
+            padding: 14px;
+            color: #b91c1c;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+        }
+
+        .background-back {
+            display: inline-block;
+            margin-top: 5px;
+            color: #4263eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 700px) {
+            .background-page {
+                padding: 18px;
+            }
+
+            .background-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+
+        <a href="{{ url_for('home') }}" class="logo">
+            <img
+                src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                class="logo-icon"
+                alt="ImageLab">
+
+            <span>Image Lab</span>
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('home') }}" class="nav-item">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('image_analysis', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">▧</span>
+                <span>Image Analysis</span>
+            </a>
+
+            <a href="{{ url_for('histogram_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">▥</span>
+                <span>Histogram</span>
+            </a>
+
+            <a href="{{ url_for('filters_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">✦</span>
+                <span>Image Filters</span>
+            </a>
+
+            <a href="{{ url_for('enhancement_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">✧</span>
+                <span>Enhancement Studio</span>
+            </a>
+
+            <a href="{{ url_for('compression_page', filename=filename) }}"
+               class="nav-item">
+                <span class="nav-icon">⇩</span>
+                <span>Image Compression</span>
+            </a>
+
+            <a href="{{ url_for('background_removal_page', filename=filename) }}"
+               class="nav-item active">
+                <span class="nav-icon">✂</span>
+                <span>Background Removal</span>
+                <span class="nav-indicator"></span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="sidebar-footer">
+
+                <img
+                    src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                    alt="ImageLab Logo"
+                    class="logo-icon">
+
+                <div class="footer-brand">
+                    <strong>Image Lab Studio</strong>
+                    <span>Version 1.0</span>
+                </div>
+
+            </div>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="background-page">
+
+            <div class="background-header">
+                <span class="eyebrow">AI IMAGE EDITING</span>
+                <h1>Background Removal</h1>
+                <p>Remove image backgrounds and create transparent PNG images.</p>
+            </div>
+
+            <div class="background-card">
+
+                <h2>Remove Image Background</h2>
+
+                <p>
+                    Automatically separate the main subject from its
+                    background and create a transparent image.
+                </p>
+
+                <div class="image-preview">
+
+                    <h3>Original Image</h3>
+
+                    <img
+                        src="{{ url_for('static', filename='uploads/' + filename) }}"
+                        alt="Original Image"
+                        class="preview-image">
+
+                </div>
+
+                {% if error %}
+                    <div class="error-message">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                {% if not result %}
+
+                    <form method="POST"
+                          action="{{ url_for('background_removal_page', filename=filename) }}">
+
+                        <button type="submit" class="background-button">
+                            ✂ Remove Background
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+                {% if result %}
+
+                    <div class="background-result">
+
+                        <h3>Background Removed Successfully!</h3>
+
+                        <p>
+                            Your image background has been removed.
+                            The result is saved as a transparent PNG.
+                        </p>
+
+                        <img
+                            src="{{ url_for('static', filename='results/' + result) }}"
+                            alt="Background Removed Image"
+                            class="preview-image result-image">
+
+                        <a
+                            href="{{ url_for('download_background_removed', filename=filename, result=result) }}"
+                            class="download-button">
+                            ↓ Download Image
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            <a href="{{ url_for('image_analysis', filename=filename) }}"
+               class="background-back">
+                ← Back to Image Analysis
+            </a>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

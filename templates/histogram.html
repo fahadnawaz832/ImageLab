@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Image Histogram | ImageLab</title>
+
+    <link rel="icon" type="image/svg+xml"
+          href="{{ url_for('static', filename='images/imagelab-icon.svg') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ==================================
+           HISTOGRAM PAGE - LIGHT THEME
+        ================================== */
+
+        body,
+        .dashboard,
+        .main-content {
+            background: #f4f7fc !important;
+            color: #172033 !important;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            background: #ffffff !important;
+            border-right: 1px solid #e2e8f0 !important;
+        }
+
+        .logo span {
+            color: #172033 !important;
+        }
+
+        .sidebar-label {
+            color: #94a3b8 !important;
+        }
+
+        .nav-item {
+            color: #475569 !important;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #eef2ff !important;
+            color: #4263eb !important;
+        }
+
+        .nav-item.active .nav-icon {
+            color: #4263eb !important;
+        }
+
+        /* SIDEBAR BOTTOM BRANDING */
+        .sidebar-bottom {
+            border-top: 1px solid #e2e8f0 !important;
+        }
+
+        .sidebar-footer strong {
+            color: #172033 !important;
+        }
+
+        .sidebar-footer span {
+            color: #64748b !important;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            color: #172033 !important;
+        }
+
+        .topbar h1 {
+            color: #172033 !important;
+        }
+
+        .topbar p {
+            color: #64748b !important;
+        }
+
+        .eyebrow {
+            color: #4263eb !important;
+        }
+
+        /* HISTOGRAM CARDS */
+        .histogram-card {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.045) !important;
+            color: #172033 !important;
+        }
+
+        .histogram-card h2 {
+            color: #172033 !important;
+        }
+
+        .histogram-card p {
+            color: #64748b !important;
+        }
+
+        /* SINGLE HISTOGRAM CARD LAYOUT */
+        .histogram-grid.single-chart {
+            grid-template-columns: minmax(0, 1fr) !important;
+        }
+
+        .histogram-grid.single-chart .histogram-card {
+            width: 100%;
+        }
+
+        /* BUTTONS */
+        .back-button {
+            color: #334155 !important;
+        }
+
+        .primary-button {
+            color: #ffffff !important;
+        }
+
+        /* RESULT IMAGE */
+        .enhanced-preview {
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <a href="{{ url_for('home') }}" class="logo">
+
+            <img
+                src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+                class="logo-icon"
+                alt="ImageLab">
+
+            <span>Image Lab</span>
+
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('home') }}" class="nav-item">
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('image_analysis', filename=filename) }}"
+               class="nav-item">
+
+                <span class="nav-icon">▧</span>
+                <span>Image Analysis</span>
+
+            </a>
+
+            <a href="{{ url_for('histogram_page', filename=filename) }}"
+               class="nav-item active">
+
+                <span class="nav-icon">▥</span>
+                <span>Histogram</span>
+                <span class="nav-indicator"></span>
+
+            </a>
+
+            <a href="{{ url_for('filters_page', filename=filename) }}"
+               class="nav-item">
+
+                <span class="nav-icon">✦</span>
+                <span>Image Filters</span>
+
+            </a>
+
+            <a href="{{ url_for('enhancement_page', filename=filename) }}"
+               class="nav-item">
+
+                <span class="nav-icon">✧</span>
+                <span>Enhancement Studio</span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- SIDEBAR BRANDING -->
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-footer">
+    <img
+        src="{{ url_for('static', filename='images/imagelab-icon.svg') }}"
+        alt="ImageLab Logo"
+        class="logo-icon"
+    >
+
+    <div class="footer-brand">
+        <strong>ImageLab Studio</strong>
+        <span>Version 1.0</span>
+    </div>
+</div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <p class="eyebrow">IMAGE PROCESSING / ANALYSIS</p>
+
+                <h1>Histogram Analysis</h1>
+
+                <p>
+                    Understand and enhance your image intensity distribution.
+                </p>
+
+            </div>
+
+            <a href="{{ url_for('image_analysis', filename=filename) }}"
+               class="back-button">
+
+                ← Back to Analysis
+
+            </a>
+
+        </header>
+
+
+        <!-- HISTOGRAM CHARTS -->
+        <section class="histogram-grid single-chart">
+
+
+            {% if is_grayscale %}
+
+            <!-- GRAYSCALE IMAGE: ONLY GRAYSCALE HISTOGRAM -->
+
+            <div class="histogram-card">
+
+                <h2>Grayscale Histogram</h2>
+
+                <p>Brightness distribution from black to white.</p>
+
+                <canvas id="grayChart"></canvas>
+
+            </div>
+
+
+            {% else %}
+
+            <!-- COLOR IMAGE: ONLY RGB HISTOGRAM -->
+
+            <div class="histogram-card">
+
+                <h2>RGB Histogram</h2>
+
+                <p>Color intensity distribution across 256 levels.</p>
+
+                <canvas id="rgbChart"></canvas>
+
+            </div>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- HISTOGRAM EQUALIZATION -->
+        <section class="histogram-card equalization-card">
+
+            <div>
+
+                <p class="eyebrow">IMAGE ENHANCEMENT</p>
+
+                <h2>Histogram Equalization</h2>
+
+                <p>
+                    Improve image contrast by redistributing intensity values.
+                    Your original image will remain unchanged.
+                </p>
+
+            </div>
+
+            <form
+                method="POST"
+                action="{{ url_for('equalize_route', filename=filename) }}">
+
+                <button type="submit" class="primary-button">
+                    Apply Equalization →
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- EQUALIZED RESULT -->
+        {% if result %}
+
+        <section class="histogram-card result-card">
+
+            <p class="eyebrow">PROCESSING COMPLETE</p>
+
+            <h2>Equalized Image</h2>
+
+            <p>
+                Your histogram equalization result is ready.
+            </p>
+
+            <img
+                src="{{ url_for('static', filename='results/' + result) }}"
+                alt="Equalized image"
+                class="enhanced-preview">
+
+            <a
+                class="primary-button"
+                href="{{ download_url }}">
+
+                Download Equalized Image ↓
+
+            </a>
+
+        </section>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+
+<!-- CHART.JS -->
+<script>
+
+    const histogramData = {{ histogram_data | tojson }};
+
+    const labels = Array.from({length: 256}, (_, i) => i);
+
+
+    {% if is_grayscale %}
+
+    // GRAYSCALE HISTOGRAM
+
+    new Chart(document.getElementById("grayChart"), {
+
+        type: "bar",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: "Grayscale",
+
+                data: histogramData.grayscale,
+
+                backgroundColor: "#8c9eff",
+
+                borderWidth: 0
+
+            }]
+
+        },
+
+        options: chartOptions()
+
+    });
+
+
+    {% else %}
+
+    // RGB HISTOGRAM
+
+    new Chart(document.getElementById("rgbChart"), {
+
+        type: "line",
+
+        data: {
+
+            labels: labels,
+
+            datasets: [
+
+                {
+                    label: "Red",
+                    data: histogramData.r,
+                    borderColor: "#ff5b70",
+                    borderWidth: 1.5,
+                    pointRadius: 0
+                },
+
+                {
+                    label: "Green",
+                    data: histogramData.g,
+                    borderColor: "#16a36a",
+                    borderWidth: 1.5,
+                    pointRadius: 0
+                },
+
+                {
+                    label: "Blue",
+                    data: histogramData.b,
+                    borderColor: "#579bff",
+                    borderWidth: 1.5,
+                    pointRadius: 0
+                }
+
+            ]
+
+        },
+
+        options: chartOptions()
+
+    });
+
+    {% endif %}
+
+
+    // COMMON CHART OPTIONS
+
+    function chartOptions() {
+
+        return {
+
+            responsive: true,
+
+            maintainAspectRatio: true,
+
+            interaction: {
+                intersect: false,
+                mode: "index"
+            },
+
+            plugins: {
+
+                legend: {
+
+                    labels: {
+                        color: "#334155"
+                    }
+
+                }
+
+            },
+
+            scales: {
+
+                x: {
+
+                    ticks: {
+                        color: "#64748b",
+                        maxTicksLimit: 9
+                    },
+
+                    grid: {
+                        color: "rgba(148,163,184,0.16)"
+                    }
+
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+                        color: "#64748b"
+                    },
+
+                    grid: {
+                        color: "rgba(148,163,184,0.16)"
+                    }
+
+                }
+
+            }
+
+        };
+
+    }
+
+</script>
+
+</body>
+</html>
